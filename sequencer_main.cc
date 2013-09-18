@@ -1,38 +1,14 @@
+#include <stdio.h>
 #include <alsa/asoundlib.h>
 
-static snd_seq_t *sequencer;
-static int in_port;
+#include "midi_connection.h"
 
-void midi_open(void)
-{
-  snd_seq_open(&sequencer, "default", SND_SEQ_OPEN_INPUT, 0);
-
-  snd_seq_set_client_name(sequencer, "Midi Listener");
-  in_port = snd_seq_create_simple_port(
-      sequencer, 
-      "listen:in",
-      SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
-      SND_SEQ_PORT_TYPE_APPLICATION);
-
-  snd_seq_addr_t sender, dest;
-  snd_seq_port_subscribe_t *subs;
-  sender.client = 20;
-  sender.port = 0;
-  dest.client = 128;
-  dest.port = 0;
-  snd_seq_port_subscribe_alloca(&subs);
-  snd_seq_port_subscribe_set_sender(subs, &sender);
-  snd_seq_port_subscribe_set_dest(subs, &dest);
-  snd_seq_port_subscribe_set_queue(subs, 1);
-  snd_seq_port_subscribe_set_time_update(subs, 1);
-  snd_seq_port_subscribe_set_time_real(subs, 1);
-  snd_seq_subscribe_port(sequencer, subs);
-}
+static MidiConnection *midi_connection;
 
 snd_seq_event_t *midi_read(void)
 {
   snd_seq_event_t *midi_event = NULL;
-  snd_seq_event_input(sequencer, &midi_event);
+  snd_seq_event_input(midi_connection->sequencer(), &midi_event);
   return midi_event;
 }
 
@@ -62,9 +38,28 @@ void midi_process(snd_seq_event_t *ev)
   }
 }
 
-int main()
-{
-  midi_open();
+void deliver_event() {
+  snd_seq_event_t ev;
+  snd_seq_ev_clear(&ev);
+  snd_seq_ev_set_source(&ev, 128);
+  snd_seq_ev_set_subs(&ev);
+  snd_seq_ev_set_direct(&ev);
+  snd_seq_ev_set_note(&ev, 
+                      0,
+                      60,
+                      100,
+                      20);
+  snd_seq_event_output_direct(midi_connection->sequencer(), &ev);
+  // snd_seq_drain_output(midi_connection->sequencer());
+  printf("output note port:%d\n", midi_connection->application_port());
+}
+
+int main() {
+  midi_connection = new MidiConnection(20);
+  midi_connection->CreateApplicationPort();
+  midi_connection->SubscribeInput();
+  // while (getchar() != 'q')
+  //   deliver_event();
   while (1) {
     midi_process(midi_read());
   }
