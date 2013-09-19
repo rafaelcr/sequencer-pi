@@ -3,7 +3,11 @@
 
 #include "midi_connection.h"
 
+#define CHECK(X)  if ((err = (X)) < 0) \
+     printf("error %d: %s\n", err, snd_strerror(err));
+
 static MidiConnection *midi_connection;
+static int err;
 
 snd_seq_event_t *midi_read(void)
 {
@@ -41,27 +45,28 @@ void midi_process(snd_seq_event_t *ev)
 void deliver_event() {
   snd_seq_event_t ev;
   snd_seq_ev_clear(&ev);
-  snd_seq_ev_set_source(&ev, 128);
-  snd_seq_ev_set_subs(&ev);
+  snd_seq_ev_set_source(&ev, midi_connection->application_port());
+  snd_seq_ev_set_dest(&ev, 14, 0);
+  snd_seq_ev_set_fixed(&ev);
   snd_seq_ev_set_direct(&ev);
-  snd_seq_ev_set_note(&ev, 
-                      0,
-                      60,
-                      100,
-                      20);
-  snd_seq_event_output_direct(midi_connection->sequencer(), &ev);
-  // snd_seq_drain_output(midi_connection->sequencer());
-  printf("output note port:%d\n", midi_connection->application_port());
+  ev.type = SND_SEQ_EVENT_NOTEON;
+  ev.data.note.channel = 0;
+  ev.data.note.note = 64 ;
+  ev.data.note.velocity = 127;
+  CHECK(snd_seq_event_output_direct(midi_connection->sequencer(), &ev));
+  sleep(1);
+  ev.type = SND_SEQ_EVENT_NOTEOFF;
+  CHECK(snd_seq_event_output_direct(midi_connection->sequencer(), &ev));
 }
 
 int main() {
-  midi_connection = new MidiConnection(20);
+  midi_connection = new MidiConnection(20, 0);
   midi_connection->CreateApplicationPort();
-  midi_connection->SubscribeInput();
+  midi_connection->SubscribeOutput();
   // while (getchar() != 'q')
-  //   deliver_event();
-  while (1) {
-    midi_process(midi_read());
-  }
+    deliver_event();
+  // while (1) {
+  //   midi_process(midi_read());
+  // }
   return -1;
 }
