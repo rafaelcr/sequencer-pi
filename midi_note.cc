@@ -27,6 +27,6 @@ MidiNote::MidiNote(MidiConnection *connection,
 }
 
 MidiNote::~MidiNote() {
-  delete note_on_;
-  delete note_off_;
+  delete &note_on_;
+  delete &note_off_;
 }

@@ -14,17 +14,17 @@ class MidiSequencer {
   MidiSequencer();
   MidiSequencer(MidiConnection *);
   ~MidiSequencer();
-
   // Creates the event queue for scheduling notes, etc.
   int CreateEventQueue();
-
-  // Note scheduling methods.
-  void ScheduleNote(int, int, int);
-
+  // Function that writes a MidiNote to the note matrix. It takes the matrix
+  // x and y as arguments, basically, which position the note in time and pitch
+  // relative to the base note.
+  void AddNote(char, char);
+  // Removes a note from the note matrix given its sequencer coordinates.
+  void RemoveNote(char, char);
   // Playback control methods.
   void Play();
   void Stop();
-
   // Setter methods, usually external interfaces for real time interaction.
   void set_tempo(int);
  private:
