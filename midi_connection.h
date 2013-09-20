@@ -8,8 +8,7 @@ class MidiConnection {
   MidiConnection();
   MidiConnection(int, int);
 
-  // Creates an application port for us to read or write from a MIDI device.
-  // The default number for an application port is 128.
+  // Creates an application port for us to read and write from a MIDI device.
   void CreateApplicationPort();
 
   // Subscribe to a MIDI device to read events from it.
@@ -18,6 +17,7 @@ class MidiConnection {
   // Subscribe to a MIDI device to write events to it.
   int SubscribeOutput();
 
+  // Getter methods.
   snd_seq_t* sequencer() const { return sequencer_; }
   int application_client() const { return application_client_; }
   int application_port() const { return application_port_; }

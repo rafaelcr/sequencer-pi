@@ -46,7 +46,7 @@ void deliver_event() {
   snd_seq_event_t ev;
   snd_seq_ev_clear(&ev);
   snd_seq_ev_set_source(&ev, midi_connection->application_port());
-  snd_seq_ev_set_dest(&ev, 14, 0);
+  snd_seq_ev_set_dest(&ev, 14, 0);  // Always send to MIDI Through port.
   snd_seq_ev_set_fixed(&ev);
   snd_seq_ev_set_direct(&ev);
   ev.type = SND_SEQ_EVENT_NOTEON;
@@ -64,9 +64,10 @@ int main() {
   midi_connection->CreateApplicationPort();
   midi_connection->SubscribeOutput();
   // while (getchar() != 'q')
-    deliver_event();
+  deliver_event();
   // while (1) {
   //   midi_process(midi_read());
   // }
+  delete midi_connection;
   return -1;
 }
