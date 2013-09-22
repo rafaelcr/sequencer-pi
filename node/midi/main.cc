@@ -7,6 +7,7 @@
 static MidiConnection *connection;
 static MidiSequencer *sequencer;
 
+// Tests the ALSA MIDI connection and sequencer.
 int main() {
   connection = new MidiConnection(20, 0);
   connection->CreateApplicationPort();
@@ -15,7 +16,6 @@ int main() {
   sequencer = new MidiSequencer(connection);
   sequencer->CreateEventQueue();
 
-  // TODO(rafaelcr): add some notes, play.
   sequencer->AddNote(0, 0);
   sequencer->AddNote(3, 0);
   sequencer->AddNote(5, 1);

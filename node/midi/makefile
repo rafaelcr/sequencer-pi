@@ -1,3 +1,6 @@
+# IMPORTANT
+# Use this makefile only when testing this MIDI component individually.
+# For building the node library use node-gyp.
 CC=g++
 CFLAGS=-g
 LDFLAGS=-lasound
