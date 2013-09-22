@@ -7,16 +7,12 @@ class MidiConnection {
  public:
   MidiConnection();
   MidiConnection(int, int);
-
   // Creates an application port for us to read and write from a MIDI device.
   void CreateApplicationPort();
-
   // Subscribe to a MIDI device to read events from it.
   int SubscribeInput();
-
   // Subscribe to a MIDI device to write events to it.
   int SubscribeOutput();
-
   // Getter methods.
   snd_seq_t* sequencer() const { return sequencer_; }
   int application_client() const { return application_client_; }

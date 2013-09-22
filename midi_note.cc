@@ -6,7 +6,7 @@ MidiNote::MidiNote(MidiConnection *connection,
                    unsigned char note, 
                    unsigned char velocity) {
   connection_ = connection;
-
+  // Create note ON event.
   snd_seq_ev_clear(&note_on_);
   snd_seq_ev_set_source(&note_on_, connection_->application_port());
   snd_seq_ev_set_dest(&note_on_, kMidiThroughClient, 0);
@@ -15,7 +15,7 @@ MidiNote::MidiNote(MidiConnection *connection,
   note_on_.data.note.channel = 0;
   note_on_.data.note.note = note;
   note_on_.data.note.velocity = velocity;
-
+  // Create note OFF event.
   snd_seq_ev_clear(&note_off_);
   snd_seq_ev_set_source(&note_off_, connection_->application_port());
   snd_seq_ev_set_dest(&note_off_, kMidiThroughClient, 0);
