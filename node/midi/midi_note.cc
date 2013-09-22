@@ -25,8 +25,3 @@ MidiNote::MidiNote(MidiConnection *connection,
   note_off_.data.note.note = note;
   note_off_.data.note.velocity = velocity;
 }
-
-MidiNote::~MidiNote() {
-  delete &note_on_;
-  delete &note_off_;
-}

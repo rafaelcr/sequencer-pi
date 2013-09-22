@@ -50,8 +50,10 @@ void MidiSequencer::RemoveNote(char note, char step) {
   if (note < 0 || step < 0) return;
 
   MidiNote *midi_note = note_matrix_[(int)step][(int)note];
-  note_matrix_[(int)step][(int)note] = NULL;
-  delete midi_note;
+  if (midi_note) {
+    delete midi_note;
+    note_matrix_[(int)step][(int)note] = NULL;
+  }
 }
 
 void MidiSequencer::ScheduleSequence() {

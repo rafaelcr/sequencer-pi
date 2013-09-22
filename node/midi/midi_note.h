@@ -9,7 +9,6 @@ class MidiNote {
  public:
   MidiNote();
   MidiNote(MidiConnection *, unsigned char, unsigned char);
-  ~MidiNote();
   snd_seq_event_t note_on() const { return note_on_; }
   snd_seq_event_t note_off() const { return note_off_; }
 
