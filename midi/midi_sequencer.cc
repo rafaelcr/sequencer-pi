@@ -32,6 +32,7 @@ int MidiSequencer::CreateEventQueue() {
   snd_seq_queue_tempo_set_tempo(tempo, 60 * 1000000 / bpm_);
   snd_seq_queue_tempo_set_ppq(tempo, kPPQ);
   snd_seq_set_queue_tempo(connection_->sequencer(), queue_, tempo);
+  return 1;
 }
 
 void MidiSequencer::AddNote(char note, char step) {
@@ -40,7 +41,7 @@ void MidiSequencer::AddNote(char note, char step) {
   if (note < 0 || step < 0) return;
 
   MidiNote *midi_note = new MidiNote(connection_, kBaseNote + note, 127);
-  note_matrix_[step][note] = midi_note;
+  note_matrix_[(int)step][(int)note] = midi_note;
 }
 
 void MidiSequencer::RemoveNote(char note, char step) {
@@ -48,8 +49,8 @@ void MidiSequencer::RemoveNote(char note, char step) {
   if (note > kNoteMatrixNotes || step > kNoteMatrixSteps) return;
   if (note < 0 || step < 0) return;
 
-  MidiNote *midi_note = note_matrix_[step][note];
-  note_matrix_[step][note] = NULL;
+  MidiNote *midi_note = note_matrix_[(int)step][(int)note];
+  note_matrix_[(int)step][(int)note] = NULL;
   delete midi_note;
 }
 
