@@ -28,6 +28,7 @@ Sequencer.prototype.buildSequencer = function() {
   // Don't build stuff again if it's already built, just clear notes, etc.
   if ($('#matrix').children().length > 0) {
     $('.button').removeClass('active');
+    this.runHandler();
     return;
   }
   // Create buttons.
@@ -94,10 +95,12 @@ Sequencer.prototype.runHandler = function(event) {
     console.log("Playing sequence.");
     window.sequencer._socket.emit('play', null);
     $(this).addClass('playing');
+    $(this).html("STOP");
   } else {
     console.log("Stopping sequence.");
     window.sequencer._socket.emit('stop', null);
     $(this).removeClass('playing');
+    $(this).html("PLAY");
   }
 };
 

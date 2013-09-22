@@ -62,16 +62,16 @@ void MidiSequencer::ScheduleSequence() {
       MidiNote *note = note_matrix_[s][n];
       if (note) {
         // Schedule both note ON and note OFF events. The note duration will be
-        // exactly one quarter note.
+        // exactly one 16th note.
         snd_seq_event_t note_on = note->note_on();
         snd_seq_ev_schedule_tick(&note_on, queue_, 0, tick_);
         snd_seq_event_output_direct(connection_->sequencer(), &note_on);
         snd_seq_event_t note_off = note->note_off();
-        snd_seq_ev_schedule_tick(&note_off, queue_, 0, tick_ + kPPQ);
+        snd_seq_ev_schedule_tick(&note_off, queue_, 0, tick_ + kPPQ / 4);
         snd_seq_event_output_direct(connection_->sequencer(), &note_off);
       }
     }
-    tick_ += kPPQ;
+    tick_ += kPPQ / 4;
   }
 }
 
@@ -84,6 +84,7 @@ void MidiSequencer::Play() {
 
 void MidiSequencer::Stop() {
   assert((queue_ >= 0) && "Event queue not initialized.");
+  tick_ = 0;
   snd_seq_stop_queue(connection_->sequencer(), queue_, NULL);
   snd_seq_drain_output(connection_->sequencer());
 }
