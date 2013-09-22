@@ -25,6 +25,12 @@ Sequencer.prototype.attachSocketHandlers = function() {
 
 // Creates the button matrix using divs with absolute positioning.
 Sequencer.prototype.buildSequencer = function() {
+  // Don't build stuff again if it's already built, just clear notes, etc.
+  if ($('#matrix').children().length > 0) {
+    $('.button').removeClass('active');
+    return;
+  }
+  // Create buttons.
   for (var step = 0; step < this._matrixSteps; step++) {
     for (var note = 0; note < this._matrixNotes; note++) {
       var button = $('<div>&nbsp;</div>');
@@ -51,19 +57,48 @@ Sequencer.prototype.buildSequencer = function() {
       $('#matrix').append(button);
 
       // Add listeners.
-      button.click(this.buttonClicked);
+      button.click(this.buttonHandler);
     }
   }
   // Configure matrix container dimensions.
   var matrixHeight = this._matrixNotes * this._buttonWidth
       + (this._matrixNotes - 1) * this._buttonMargin;
   $('#matrix').css('height', matrixHeight);
+
+  // Attach other action listeners.
+  $('#run').click(this.runHandler);
 };
 
 // Button click handler. Sends the appropiate request to add or remove a
 // MIDI note from the sequence in real time.
-Sequencer.prototype.buttonClicked = function(event) {
+Sequencer.prototype.buttonHandler = function(event) {
+  var note = $(this).attr('data-note');
+  var step = $(this).attr('data-step');
+
+  if (!$(this).hasClass('active')) {
+    console.log("Adding note: " + note + " step: " + step);
+    window.sequencer._socket.emit(
+        'note_add', 
+        { 'note': note, 'step': step });
+  } else {
+    console.log("Removing note: " + note + " step: " + step);
+    window.sequencer._socket.emit(
+        'note_remove', 
+        { 'note': note, 'step': step });
+  }
   $(this).toggleClass('active');
+};
+
+Sequencer.prototype.runHandler = function(event) {
+  if (!$(this).hasClass('playing')) {
+    console.log("Playing sequence.");
+    window.sequencer._socket.emit('play', null);
+    $(this).addClass('playing');
+  } else {
+    console.log("Stopping sequence.");
+    window.sequencer._socket.emit('stop', null);
+    $(this).removeClass('playing');
+  }
 };
 
 $(document).ready(function() {
