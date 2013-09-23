@@ -114,6 +114,12 @@ Sequencer.prototype.playHandler = function(event) {
 Sequencer.prototype.runPlayhead = function() {
   $('.button.playhead').removeClass('playhead');
   $('.button[data-step="' + this._activeStep + '"]').addClass('playhead');
+
+  // If we are on the last step, issue a restart to the sequencer to loop the
+  // current sequence.
+  if (this._activeStep == this._matrixSteps - 1) {
+    window.sequencer._socket.emit('loop', null);
+  }
   this._activeStep = (this._activeStep + 1) % this._matrixSteps;
 
   this._playheadTimeout = setTimeout(
