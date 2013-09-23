@@ -75,6 +75,28 @@ void MidiSequencer::ScheduleSequence() {
   }
 }
 
+void MidiSequencer::ClearSequence() {
+  for (int s = 0; s < kNoteMatrixSteps; s++) {
+    for (int n = 0; n < kNoteMatrixNotes; n++) {
+      MidiNote *midi_note = note_matrix_[s][n];
+      if (midi_note) {
+        delete midi_note;
+      }
+      note_matrix_[s][n] = NULL;
+    }
+  }
+  if (queue_ >= 0) {
+    snd_seq_remove_events_t *remove_ev;
+    snd_seq_remove_events_malloc(&remove_ev);
+    snd_seq_remove_events_set_queue(remove_ev, queue_);
+    snd_seq_remove_events_set_condition(
+        remove_ev, 
+        SND_SEQ_REMOVE_OUTPUT | SND_SEQ_REMOVE_IGNORE_OFF);
+    snd_seq_remove_events(connection_->sequencer(), remove_ev);
+    snd_seq_remove_events_free(remove_ev);
+  }
+}
+
 void MidiSequencer::Play() {
   assert((queue_ >= 0) && "Event queue not initialized.");
   snd_seq_start_queue(connection_->sequencer(), queue_, NULL);

@@ -15,6 +15,8 @@ void Sequence::Init(v8::Handle<v8::Object> exports) {
       v8::FunctionTemplate::New(AddNote)->GetFunction());
   tpl->PrototypeTemplate()->Set(v8::String::NewSymbol("removeNote"),
       v8::FunctionTemplate::New(RemoveNote)->GetFunction());
+  tpl->PrototypeTemplate()->Set(v8::String::NewSymbol("clear"),
+      v8::FunctionTemplate::New(Clear)->GetFunction());
   tpl->PrototypeTemplate()->Set(v8::String::NewSymbol("play"),
       v8::FunctionTemplate::New(Play)->GetFunction());
   tpl->PrototypeTemplate()->Set(v8::String::NewSymbol("stop"),
@@ -67,6 +69,13 @@ v8::Handle<v8::Value> Sequence::RemoveNote(const v8::Arguments& args) {
     seq->sequencer_->RemoveNote(note, step);
   }
 
+  return scope.Close(v8::Undefined());
+}
+
+v8::Handle<v8::Value> Sequence::Clear(const v8::Arguments& args) {
+  v8::HandleScope scope;
+  Sequence* seq = ObjectWrap::Unwrap<Sequence>(args.This());
+  seq->sequencer_->ClearSequence();
   return scope.Close(v8::Undefined());
 }
 

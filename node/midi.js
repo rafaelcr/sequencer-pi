@@ -23,7 +23,7 @@ io.sockets.on('connection', function(socket) {
   socket.emit('online', null);
   socket.on('client_online', function(data) {
     console.log("Web sequencer online.");
-    // TODO(rafaelcr): Remove all previous notes.
+    sequence.clear();
   });
   socket.on('note_add', function(data) {
     console.log("Adding note: " + data.note + " step: " + data.step);

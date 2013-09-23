@@ -25,6 +25,7 @@ class MidiSequencer {
   // Transfers the note matrix into the queue to schedule note on and off
   // MIDI events. This will happen every time the sequence has to begin again.
   void ScheduleSequence();
+  void ClearSequence();
   // Playback control methods.
   void Play();
   void Stop();
