@@ -1,7 +1,10 @@
+# IMPORTANT
+# Use this makefile only when testing this MIDI component individually.
+# For building the node library use node-gyp.
 CC=g++
 CFLAGS=-g
 LDFLAGS=-lasound
-SOURCES=sequencer_main.cc midi_connection.cc
+SOURCES=main.cc midi_connection.cc midi_sequencer.cc midi_note.cc
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=sequencerpi.out
 
