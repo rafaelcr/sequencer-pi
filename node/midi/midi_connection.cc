@@ -35,8 +35,9 @@ int MidiConnection::SubscribeInput() {
   snd_seq_port_subscribe_set_queue(subs, 1);
   snd_seq_port_subscribe_set_time_update(subs, 1);
   snd_seq_port_subscribe_set_time_real(subs, 1);
-  snd_seq_subscribe_port(sequencer_, subs);
-
+  if (!snd_seq_subscribe_port(sequencer_, subs)) {
+    return -errno;
+  }
   return 1;
 }
 
@@ -51,7 +52,8 @@ int MidiConnection::SubscribeOutput() {
   snd_seq_port_subscribe_alloca(&subs);
   snd_seq_port_subscribe_set_sender(subs, &sender);
   snd_seq_port_subscribe_set_dest(subs, &dest);
-  snd_seq_subscribe_port(sequencer_, subs);
-
+  if (!snd_seq_subscribe_port(sequencer_, subs)) {
+    return -errno;
+  }
   return 1;
 }
