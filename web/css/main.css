@@ -97,25 +97,30 @@ textarea {
  Author's custom styles
  ========================================================================== */
 
+body {
+  padding: 0 30px;
+}
 #matrix {
   position: relative;
 }
 .button {
-  background-color: #ccc;
+  background-color: #ddecef;
   position: absolute;
   cursor: pointer;
-  border-radius: 5px;
-  box-shadow: 2px 2px 3px #eee;
+  opacity: 0.7;
 }
 .button.active {
-  background-color: red !important;
-  box-shadow: 0px 0px 10px red;
-}
-.button.semitone {
-  background-color: #dbb;
+  background-color: #45d4db !important;
+  opacity: 1.0;
 }
 .button.strong {
-  background-color: #999;
+  background-color: #bfd9da;
+}
+.button.playhead {
+  opacity: 1.0;
+}
+.button.active.playhead {
+  background-color: #ff8114 !important;
 }
 
 /* ==========================================================================

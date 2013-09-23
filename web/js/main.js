@@ -6,6 +6,8 @@ function Sequencer() {
   this._bpm = 120;
   this._matrixNotes = 16;
   this._matrixSteps = 16;
+  this._activeStep = 0;
+  this._playheadTimeout = null;
   this._buttonWidth = 40;
   this._buttonMargin = 10;
   this._socket = io.connect('http://localhost:8080');
@@ -13,6 +15,7 @@ function Sequencer() {
   this.attachSocketHandlers();
 };
 
+// Defines the main functionality of the Socket IO connection.
 Sequencer.prototype.attachSocketHandlers = function() {
   var ctx = this;
   // ACK established connection to build ALSA sequencer on the backend and
@@ -28,7 +31,7 @@ Sequencer.prototype.buildSequencer = function() {
   // Don't build stuff again if it's already built, just clear notes, etc.
   if ($('#matrix').children().length > 0) {
     $('.button').removeClass('active');
-    this.runHandler();
+    this.playHandler();
     return;
   }
   // Create buttons.
@@ -63,11 +66,12 @@ Sequencer.prototype.buildSequencer = function() {
   }
   // Configure matrix container dimensions.
   var matrixHeight = this._matrixNotes * this._buttonWidth
-      + (this._matrixNotes - 1) * this._buttonMargin;
+      + (this._matrixNotes - 1) * this._buttonMargin
+      + 5;
   $('#matrix').css('height', matrixHeight);
 
   // Attach other action listeners.
-  $('#run').click(this.runHandler);
+  $('#run').click(this.playHandler);
 };
 
 // Button click handler. Sends the appropiate request to add or remove a
@@ -90,18 +94,37 @@ Sequencer.prototype.buttonHandler = function(event) {
   $(this).toggleClass('active');
 };
 
-Sequencer.prototype.runHandler = function(event) {
+// Play button click handler. Starts or stops the MIDI sequence.
+Sequencer.prototype.playHandler = function(event) {
   if (!$(this).hasClass('playing')) {
     console.log("Playing sequence.");
     window.sequencer._socket.emit('play', null);
     $(this).addClass('playing');
     $(this).html("STOP");
+    window.sequencer.runPlayhead();
   } else {
     console.log("Stopping sequence.");
     window.sequencer._socket.emit('stop', null);
     $(this).removeClass('playing');
     $(this).html("PLAY");
+    window.sequencer.stopPlayhead();
   }
+};
+
+Sequencer.prototype.runPlayhead = function() {
+  $('.button.playhead').removeClass('playhead');
+  $('.button[data-step="' + this._activeStep + '"]').addClass('playhead');
+  this._activeStep = (this._activeStep + 1) % this._matrixSteps;
+
+  this._playheadTimeout = setTimeout(
+      function() { window.sequencer.runPlayhead() }, 
+      1000 / (this._bpm / 60 * 4));
+};
+
+Sequencer.prototype.stopPlayhead = function() {
+  clearTimeout(this._playheadTimeout);
+  $('.button.playhead').removeClass('playhead');
+  this._activeStep = 0;
 };
 
 $(document).ready(function() {
