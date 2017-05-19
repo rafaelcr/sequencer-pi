@@ -3,7 +3,7 @@ SequencerPi
 
 This library, at the highest level, consists of an interface between a MIDI synthesizer and a web browser using a RaspberryPi as the middleware that serves both MIDI messages to the synthesizer and HTTP messages to the browser. It allows the user to create, play, edit and loop a sequence of notes using a button matrix.
 
-##Layers
+## Layers
 
 SequencerPi consists of 3 main layers:
 
@@ -13,7 +13,7 @@ SequencerPi consists of 3 main layers:
 
 ![sequencerpi diagram](http://i.imgur.com/5RKBfaV.png)
 
-##Requirements
+## Requirements
 
 This library can be compiled in a RaspberryPi running a Linux distribution like xbian or raspbian. The required packages for compilation are:
 
@@ -28,7 +28,7 @@ To build the node module, use the following command in the `node/` directory.
 
 This will generate the required libraries to run the nodejs server.
 
-##Usage
+## Usage
 
 To test, connect a MIDI synthesizer device (USB or using a USB MIDI interface) to a RaspberryPi and run the nodejs server.
 
